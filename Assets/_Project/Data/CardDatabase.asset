@@ -14,4 +14,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Scoundrel.ScriptableObjects.CardDatabase
   cardSprites: []
   cardBack: {fileID: 21300000, guid: b7ac8d6de5877a84699b7fd4ad629fb3, type: 3}
-  lockOverlay: {fileID: 0}
+  lockOverlay: {fileID: 2860044062972993909, guid: 6679bdd1642084c7092c8810c8c1db44, type: 3}
