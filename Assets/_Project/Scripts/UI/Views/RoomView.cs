@@ -77,9 +77,11 @@ namespace Scoundrel.UI.Views
                 _hudController.ShowReducedShieldEfficiency(show);
             }
         }
-
-        private void Awake()
+        
+        protected override void OnAwake()
         {
+            base.OnAwake();
+            
             // Initialize card slots with click handlers
             for (int i = 0; i < _cardSlots.Length; i++)
             {
