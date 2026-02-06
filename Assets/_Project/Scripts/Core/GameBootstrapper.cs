@@ -2,20 +2,23 @@ using Cysharp.Threading.Tasks;
 using Scoundrel.Core.Interfaces;
 using Scoundrel.Core.Services;
 using Scoundrel.ScriptableObjects;
+using Sisus.Init;
 using UnityEngine;
 
 namespace Scoundrel.Core
 {
     /// <summary>
     /// Bootstrapper component that initializes all game services and starts the game.
-    /// Attach this to a GameObject in the scene to run the game.
+    /// Uses Init(args) for dependency injection - receives GameSettings and CardDatabase from Services.
+    /// Add this component manually to a GameObject in your scene.
     /// </summary>
-    public class GameBootstrapper : MonoBehaviour
+    public class GameBootstrapper : MonoBehaviour<GameSettings, CardDatabase>
     {
-        [Header("Configuration")]
-        [SerializeField] private GameSettings _gameSettings;
+        // Injected dependencies
+        private GameSettings _gameSettings;
+        private CardDatabase _cardDatabase;
 
-        // Services (exposed for debugging and external access)
+        // Services (created and registered during init)
         private GameEvents _events;
         private PlayerState _playerState;
         private DeckSystem _deckSystem;
@@ -23,7 +26,7 @@ namespace Scoundrel.Core
         private CommandProcessor _commandProcessor;
         private GameManager _gameManager;
 
-        // Public accessors for UI and other components
+        // Public accessors for other components (via DI)
         public IGameEvents Events => _events;
         public IPlayerState PlayerState => _playerState;
         public IDeckSystem DeckSystem => _deckSystem;
@@ -31,34 +34,17 @@ namespace Scoundrel.Core
         public ICommandProcessor CommandProcessor => _commandProcessor;
         public IGameManager GameManager => _gameManager;
         public IGameSettings Settings => _gameSettings;
+        public ICardDatabase CardDatabase => _cardDatabase;
 
-        /// <summary>
-        /// Singleton instance for easy access from other components.
-        /// </summary>
-        public static GameBootstrapper Instance { get; private set; }
-
-        private void Awake()
+        protected override void Init(GameSettings gameSettings, CardDatabase cardDatabase)
         {
-            // Singleton setup
-            if (Instance != null && Instance != this)
-            {
-                Debug.LogWarning("[GameBootstrapper] Duplicate instance found, destroying...");
-                Destroy(gameObject);
-                return;
-            }
-            Instance = this;
+            _gameSettings = gameSettings;
+            _cardDatabase = cardDatabase;
 
-            // Validate settings
-            if (_gameSettings == null)
-            {
-                Debug.LogError("[GameBootstrapper] GameSettings not assigned! Please assign in inspector.");
-                return;
-            }
+            Debug.Log("[GameBootstrapper] Init called with dependencies");
 
             // Initialize all services
             InitializeServices();
-
-            Debug.Log("[GameBootstrapper] Services initialized");
         }
 
         private void Start()
@@ -72,11 +58,6 @@ namespace Scoundrel.Core
             // Cleanup
             _gameManager?.Dispose();
             _events?.ClearAllSubscriptions();
-
-            if (Instance == this)
-            {
-                Instance = null;
-            }
         }
 
         /// <summary>
@@ -123,14 +104,14 @@ namespace Scoundrel.Core
         /// </summary>
         public void OnCardClicked(int cardIndex)
         {
-            var card = _roomSystem.CurrentCards;
-            if (cardIndex < 0 || cardIndex >= card.Count)
+            var cards = _roomSystem.CurrentCards;
+            if (cardIndex < 0 || cardIndex >= cards.Count)
             {
                 Debug.LogWarning($"[GameBootstrapper] Invalid card index: {cardIndex}");
                 return;
             }
 
-            _gameManager.HandleCardInteractionAsync(card[cardIndex]).Forget();
+            _gameManager.HandleCardInteractionAsync(cards[cardIndex]).Forget();
         }
 
         /// <summary>
@@ -190,7 +171,7 @@ namespace Scoundrel.Core
             {
                 GUILayout.Label("<color=red>Services not initialized!</color>", _labelStyle);
                 GUILayout.Label(_gameSettings == null
-                    ? "GameSettings is NULL - assign in Inspector!"
+                    ? "GameSettings is NULL - check Services component!"
                     : "GameSettings assigned but init failed", _labelStyle);
                 GUILayout.EndScrollView();
                 GUILayout.EndArea();

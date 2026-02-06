@@ -331,60 +331,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &623185172
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 623185173}
-  - component: {fileID: 623185174}
-  m_Layer: 0
-  m_Name: Services
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &623185173
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 623185172}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &623185174
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 623185172}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0223ac4c76e8ddf46bd6229b84c25763, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: InitArgs::Sisus.Init.Internal.Services
-  providesServices:
-  - service: {fileID: 11400000, guid: e160113810ca34af4ab82a3a911d7e41, type: 2}
-    definingType:
-      scriptAssetGuid: d8fb4d2f9601d45d9beedb7d8cb43d50
-      TypeNameAndAssembly: Scoundrel.Core.Interfaces.IGameSettings, Assembly-CSharp
-  - service: {fileID: 11400000, guid: c7ddb079e53654308b15a3b4f94bf514, type: 2}
-    definingType:
-      scriptAssetGuid: c8bc5f4a651a543dcaca43b7bfdc3b4b
-      TypeNameAndAssembly: Scoundrel.Core.Interfaces.ICardDatabase, Assembly-CSharp
-  toClients: 6
 --- !u!1 &1338915271
 GameObject:
   m_ObjectHideFlags: 0
@@ -395,8 +341,9 @@ GameObject:
   m_Component:
   - component: {fileID: 1338915272}
   - component: {fileID: 1338915273}
+  - component: {fileID: 1338915274}
   m_Layer: 0
-  m_Name: GameManager
+  m_Name: GameBootstraper
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -429,8 +376,29 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9f09d0a88575144ab8a8ae1d60be5a8f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Scoundrel.Core.GameBootstrapper
-  _gameSettings: {fileID: 11400000, guid: e160113810ca34af4ab82a3a911d7e41, type: 2}
   _showDebugInfo: 1
+--- !u!114 &1338915274
+MonoBehaviour:
+  m_ObjectHideFlags: 2
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1338915271}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4e63cbfb560fa4013bb7e1b9a1ad5865, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Scoundrel.Core.GameBootstrapperInitializer
+  target: {fileID: 1338915273}
+  nullArgumentGuard: 3
+  firstArgument:
+    reference: {fileID: 0}
+    value: {fileID: 0}
+  secondArgument:
+    reference: {fileID: 0}
+    value: {fileID: 0}
+  disposeArgumentsOnDestroy: 0
+  asyncArguments: 0
 --- !u!1 &1518656954
 GameObject:
   m_ObjectHideFlags: 0
@@ -443,6 +411,7 @@ GameObject:
   - component: {fileID: 1518656957}
   - component: {fileID: 1518656956}
   - component: {fileID: 1518656955}
+  - component: {fileID: 1518656959}
   m_Layer: 5
   m_Name: Canvas
   m_TagString: Untagged
@@ -533,6 +502,26 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0, y: 0}
+--- !u!114 &1518656959
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1518656954}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e7bb0671788cc45e99f3f322e05066b8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Scoundrel.UI.Views.HUDController
+  _healthDisplay: {fileID: 0}
+  _shieldDisplay: {fileID: 0}
+  _deckView: {fileID: 0}
+  _runButton: {fileID: 0}
+  _roomView: {fileID: 0}
+  _gameOverPanel: {fileID: 0}
+  _gameOverText: {fileID: 0}
+  _restartButton: {fileID: 0}
 --- !u!1 &1879742993
 GameObject:
   m_ObjectHideFlags: 0
@@ -612,12 +601,70 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1939699795
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1939699796}
+  - component: {fileID: 1939699797}
+  m_Layer: 0
+  m_Name: Services
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &1939699796
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1939699795}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1939699797
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1939699795}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0223ac4c76e8ddf46bd6229b84c25763, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: InitArgs::Sisus.Init.Internal.Services
+  providesServices:
+  - service: {fileID: 11400000, guid: c7ddb079e53654308b15a3b4f94bf514, type: 2}
+    definingType:
+      scriptAssetGuid: d5a26fbacdb7f48cdb4b7986187fa9fe
+      TypeNameAndAssembly: Scoundrel.ScriptableObjects.CardDatabase, Assembly-CSharp
+  - service: {fileID: 11400000, guid: e160113810ca34af4ab82a3a911d7e41, type: 2}
+    definingType:
+      scriptAssetGuid: fbb445490e1024414b326685b836ffe7
+      TypeNameAndAssembly: Scoundrel.ScriptableObjects.GameSettings, Assembly-CSharp
+  - service: {fileID: 1338915273}
+    definingType:
+      scriptAssetGuid: 9f09d0a88575144ab8a8ae1d60be5a8f
+      TypeNameAndAssembly: Scoundrel.Core.GameBootstrapper, Assembly-CSharp
+  toClients: 6
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
   m_Roots:
   - {fileID: 519420032}
   - {fileID: 1879742996}
-  - {fileID: 623185173}
   - {fileID: 1518656958}
   - {fileID: 1338915272}
+  - {fileID: 1939699796}
