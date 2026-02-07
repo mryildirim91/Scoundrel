@@ -124,7 +124,7 @@ namespace Scoundrel.Core
 
 #if UNITY_EDITOR
         [Header("Debug")]
-        [SerializeField] private bool _showDebugInfo = true;
+        [SerializeField] private bool _showDebugInfo = false;
         private Vector2 _debugScrollPosition;
         private GUIStyle _labelStyle;
         private GUIStyle _headerStyle;
