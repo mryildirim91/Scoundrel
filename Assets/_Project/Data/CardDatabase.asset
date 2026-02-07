@@ -12,6 +12,138 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a26fbacdb7f48cdb4b7986187fa9fe, type: 3}
   m_Name: CardDatabase
   m_EditorClassIdentifier: Assembly-CSharp::Scoundrel.ScriptableObjects.CardDatabase
-  cardSprites: []
-  cardBack: {fileID: 21300000, guid: b7ac8d6de5877a84699b7fd4ad629fb3, type: 3}
+  cardSprites:
+  - suit: 0
+    rank: 2
+    sprite: {fileID: 99280202, guid: 06cf0e971ab597c4baa1d5ebc85f9092, type: 3}
+  - suit: 0
+    rank: 3
+    sprite: {fileID: -1202987920, guid: 667bbda77efdc7643af1ba3f7a57c731, type: 3}
+  - suit: 0
+    rank: 4
+    sprite: {fileID: -1820577461, guid: 919bb6d8e262dbb4da2f99567debabc8, type: 3}
+  - suit: 0
+    rank: 5
+    sprite: {fileID: 1933153958, guid: 27ac25b40d884084086bee1dd4d49048, type: 3}
+  - suit: 0
+    rank: 6
+    sprite: {fileID: -1397610833, guid: 2d07bf33f244ef448a89c4723924138f, type: 3}
+  - suit: 0
+    rank: 7
+    sprite: {fileID: 561711927, guid: 3e16ba994190e244595207a63b19d866, type: 3}
+  - suit: 0
+    rank: 8
+    sprite: {fileID: 601216329, guid: e53e9df87601fa3499a475dc6cd3f146, type: 3}
+  - suit: 0
+    rank: 9
+    sprite: {fileID: -1537379079, guid: 7c8187597186f574ca23a39da8c2e4d7, type: 3}
+  - suit: 0
+    rank: 10
+    sprite: {fileID: -1235707698, guid: 972f0f9ce81ca214a8237e308198b656, type: 3}
+  - suit: 0
+    rank: 11
+    sprite: {fileID: -642615181, guid: 39013cabbf42b2f409b33a3eac47db09, type: 3}
+  - suit: 0
+    rank: 12
+    sprite: {fileID: 1878075436, guid: 997aa58b7aac3104ba0c686fdf1733f9, type: 3}
+  - suit: 0
+    rank: 13
+    sprite: {fileID: -215782752, guid: cd0cd9ed5992d22438f5ec3104dfdb0e, type: 3}
+  - suit: 0
+    rank: 14
+    sprite: {fileID: 966356995, guid: 7f6daa558f814804687d49e06b6e3f6e, type: 3}
+  - suit: 1
+    rank: 2
+    sprite: {fileID: 243966479, guid: 6ff2764853012e742973ce25d55f2c34, type: 3}
+  - suit: 1
+    rank: 3
+    sprite: {fileID: 2061099174, guid: e87e6b9aa65160e41bd64ef55947d5f6, type: 3}
+  - suit: 1
+    rank: 4
+    sprite: {fileID: -2055991913, guid: 9424100a0e258a449a199347654589b3, type: 3}
+  - suit: 1
+    rank: 5
+    sprite: {fileID: -914893184, guid: 61d8a6f2059beb24d9914dabc3793e7a, type: 3}
+  - suit: 1
+    rank: 6
+    sprite: {fileID: -281220875, guid: 92f1ec9d49ffd82409d0a0236dfcc4f8, type: 3}
+  - suit: 1
+    rank: 7
+    sprite: {fileID: -1467435108, guid: 4354af9c23529874c9a3168a51c5f84f, type: 3}
+  - suit: 1
+    rank: 8
+    sprite: {fileID: 643294714, guid: 767087b8e01b60d449193b08981ed0b4, type: 3}
+  - suit: 1
+    rank: 9
+    sprite: {fileID: -2060474738, guid: e81b613415a79ed4eb39cb5a8d47c2d5, type: 3}
+  - suit: 1
+    rank: 10
+    sprite: {fileID: -1273582459, guid: d445747c9566f7244b03b305340a0695, type: 3}
+  - suit: 1
+    rank: 11
+    sprite: {fileID: 725445703, guid: 492c1229cee1acd4690ad86cd200a6f5, type: 3}
+  - suit: 1
+    rank: 12
+    sprite: {fileID: -1662990924, guid: e6c7574260e6a2640a1b61a877083ba4, type: 3}
+  - suit: 1
+    rank: 13
+    sprite: {fileID: -1670687010, guid: 02d955eb92cace64c8794e0db5acdf84, type: 3}
+  - suit: 1
+    rank: 14
+    sprite: {fileID: -61240321, guid: a4fc6b6199c42a444a334a1a36d2aa6b, type: 3}
+  - suit: 2
+    rank: 2
+    sprite: {fileID: 1832002334, guid: d909ccfc9e58b3049970d8cf03940e9f, type: 3}
+  - suit: 2
+    rank: 3
+    sprite: {fileID: 1332564759, guid: d0b331d5ee7857240811213cf5d645a0, type: 3}
+  - suit: 2
+    rank: 4
+    sprite: {fileID: 104927832, guid: 023645d96f59783409529c964f320358, type: 3}
+  - suit: 2
+    rank: 5
+    sprite: {fileID: 1888535458, guid: 4e68dbfed743e3b4ea868d7e1a71e7b5, type: 3}
+  - suit: 2
+    rank: 6
+    sprite: {fileID: -952629546, guid: bf3c58b2a3ab60d458d54500fdb61945, type: 3}
+  - suit: 2
+    rank: 7
+    sprite: {fileID: -1516710890, guid: 9f806d2a58159824182304f3fc67a534, type: 3}
+  - suit: 2
+    rank: 8
+    sprite: {fileID: 1169250856, guid: 53c5800c8807aef4faca1b5cd6627dc7, type: 3}
+  - suit: 2
+    rank: 9
+    sprite: {fileID: 570162170, guid: 4aeb15a2b5b9edd47875f16c79e782a5, type: 3}
+  - suit: 2
+    rank: 10
+    sprite: {fileID: 122968409, guid: d9169613d3e2b8b42b64a0fbfdf819e4, type: 3}
+  - suit: 3
+    rank: 2
+    sprite: {fileID: -1839331407, guid: 0578083d8ed58634cb9bc06c87933186, type: 3}
+  - suit: 3
+    rank: 3
+    sprite: {fileID: 177666903, guid: 000d1edd79139f7488cc02522d7134e5, type: 3}
+  - suit: 3
+    rank: 4
+    sprite: {fileID: 1799885311, guid: 13e5f3ccdda2fd747820cc4bf72d3e8f, type: 3}
+  - suit: 3
+    rank: 5
+    sprite: {fileID: -712657112, guid: da161e602de5da74fb8e0397318d8a03, type: 3}
+  - suit: 3
+    rank: 6
+    sprite: {fileID: -2127509092, guid: 709c06977168b98498301f980b03cf30, type: 3}
+  - suit: 3
+    rank: 7
+    sprite: {fileID: 8471875, guid: 15f8e8a8beb0f38409ecef0674a2fd3e, type: 3}
+  - suit: 3
+    rank: 8
+    sprite: {fileID: -210960678, guid: 76ab4ce42ce5a2a41816ebc6715d42b0, type: 3}
+  - suit: 3
+    rank: 9
+    sprite: {fileID: 1269389816, guid: 955384ef79f599a4eb1ca9947b01b2ed, type: 3}
+  - suit: 3
+    rank: 10
+    sprite: {fileID: 1329798618, guid: 15a9eefeb3562b24e8b4f6f20e0a00c0, type: 3}
+  cardBack: {fileID: 21300000, guid: 6d2b8ecba8bb12d428ce1ef6fab25ee7, type: 3}
   lockOverlay: {fileID: 2860044062972993909, guid: 6679bdd1642084c7092c8810c8c1db44, type: 3}

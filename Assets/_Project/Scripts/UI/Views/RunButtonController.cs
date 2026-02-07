@@ -44,9 +44,10 @@ namespace Scoundrel.UI.Views
 
             Debug.Log("[RunButtonController] Initialized via Init(args)");
         }
-
-        private void Awake()
+        
+        protected override void OnAwake()
         {
+            base.OnAwake();
             if (_button == null) _button = GetComponent<Button>();
             _button.onClick.AddListener(HandleRunClicked);
         }

@@ -58,12 +58,101 @@ namespace Scoundrel.ScriptableObjects
 
 #if UNITY_EDITOR
         /// <summary>
-        /// Editor utility to auto-populate card sprites from a folder.
+        /// Called when the ScriptableObject is first created.
+        /// Auto-populates the card entries array.
         /// </summary>
-        [ContextMenu("Auto-Populate Sprites")]
-        private void AutoPopulateSprites()
+        private void Reset()
         {
-            Debug.Log("Use the CardDatabaseEditor to auto-populate sprites.");
+            InitializeCardEntries();
+        }
+
+        /// <summary>
+        /// Context menu to regenerate all 44 card entries.
+        /// Preserves existing sprite assignments where possible.
+        /// </summary>
+        [ContextMenu("Initialize Card Entries (44 cards)")]
+        private void InitializeCardEntries()
+        {
+            // Store existing sprite mappings to preserve them
+            var existingSprites = new System.Collections.Generic.Dictionary<(CardSuit, CardRank), Sprite>();
+            if (cardSprites != null)
+            {
+                foreach (var entry in cardSprites)
+                {
+                    if (entry != null && entry.Sprite != null)
+                    {
+                        existingSprites[(entry.Suit, entry.Rank)] = entry.Sprite;
+                    }
+                }
+            }
+
+            var entries = new System.Collections.Generic.List<CardSpriteEntry>();
+
+            // SPADES: 2-10, J, Q, K, A (13 cards - Monsters)
+            entries.Add(CreateEntry(CardSuit.Spades, CardRank.Two, existingSprites));
+            entries.Add(CreateEntry(CardSuit.Spades, CardRank.Three, existingSprites));
+            entries.Add(CreateEntry(CardSuit.Spades, CardRank.Four, existingSprites));
+            entries.Add(CreateEntry(CardSuit.Spades, CardRank.Five, existingSprites));
+            entries.Add(CreateEntry(CardSuit.Spades, CardRank.Six, existingSprites));
+            entries.Add(CreateEntry(CardSuit.Spades, CardRank.Seven, existingSprites));
+            entries.Add(CreateEntry(CardSuit.Spades, CardRank.Eight, existingSprites));
+            entries.Add(CreateEntry(CardSuit.Spades, CardRank.Nine, existingSprites));
+            entries.Add(CreateEntry(CardSuit.Spades, CardRank.Ten, existingSprites));
+            entries.Add(CreateEntry(CardSuit.Spades, CardRank.Jack, existingSprites));
+            entries.Add(CreateEntry(CardSuit.Spades, CardRank.Queen, existingSprites));
+            entries.Add(CreateEntry(CardSuit.Spades, CardRank.King, existingSprites));
+            entries.Add(CreateEntry(CardSuit.Spades, CardRank.Ace, existingSprites));
+
+            // CLUBS: 2-10, J, Q, K, A (13 cards - Monsters)
+            entries.Add(CreateEntry(CardSuit.Clubs, CardRank.Two, existingSprites));
+            entries.Add(CreateEntry(CardSuit.Clubs, CardRank.Three, existingSprites));
+            entries.Add(CreateEntry(CardSuit.Clubs, CardRank.Four, existingSprites));
+            entries.Add(CreateEntry(CardSuit.Clubs, CardRank.Five, existingSprites));
+            entries.Add(CreateEntry(CardSuit.Clubs, CardRank.Six, existingSprites));
+            entries.Add(CreateEntry(CardSuit.Clubs, CardRank.Seven, existingSprites));
+            entries.Add(CreateEntry(CardSuit.Clubs, CardRank.Eight, existingSprites));
+            entries.Add(CreateEntry(CardSuit.Clubs, CardRank.Nine, existingSprites));
+            entries.Add(CreateEntry(CardSuit.Clubs, CardRank.Ten, existingSprites));
+            entries.Add(CreateEntry(CardSuit.Clubs, CardRank.Jack, existingSprites));
+            entries.Add(CreateEntry(CardSuit.Clubs, CardRank.Queen, existingSprites));
+            entries.Add(CreateEntry(CardSuit.Clubs, CardRank.King, existingSprites));
+            entries.Add(CreateEntry(CardSuit.Clubs, CardRank.Ace, existingSprites));
+
+            // DIAMONDS: 2-10 only (9 cards - Shields, NO face cards, NO ace)
+            entries.Add(CreateEntry(CardSuit.Diamonds, CardRank.Two, existingSprites));
+            entries.Add(CreateEntry(CardSuit.Diamonds, CardRank.Three, existingSprites));
+            entries.Add(CreateEntry(CardSuit.Diamonds, CardRank.Four, existingSprites));
+            entries.Add(CreateEntry(CardSuit.Diamonds, CardRank.Five, existingSprites));
+            entries.Add(CreateEntry(CardSuit.Diamonds, CardRank.Six, existingSprites));
+            entries.Add(CreateEntry(CardSuit.Diamonds, CardRank.Seven, existingSprites));
+            entries.Add(CreateEntry(CardSuit.Diamonds, CardRank.Eight, existingSprites));
+            entries.Add(CreateEntry(CardSuit.Diamonds, CardRank.Nine, existingSprites));
+            entries.Add(CreateEntry(CardSuit.Diamonds, CardRank.Ten, existingSprites));
+
+            // HEARTS: 2-10 only (9 cards - Potions, NO face cards, NO ace)
+            entries.Add(CreateEntry(CardSuit.Hearts, CardRank.Two, existingSprites));
+            entries.Add(CreateEntry(CardSuit.Hearts, CardRank.Three, existingSprites));
+            entries.Add(CreateEntry(CardSuit.Hearts, CardRank.Four, existingSprites));
+            entries.Add(CreateEntry(CardSuit.Hearts, CardRank.Five, existingSprites));
+            entries.Add(CreateEntry(CardSuit.Hearts, CardRank.Six, existingSprites));
+            entries.Add(CreateEntry(CardSuit.Hearts, CardRank.Seven, existingSprites));
+            entries.Add(CreateEntry(CardSuit.Hearts, CardRank.Eight, existingSprites));
+            entries.Add(CreateEntry(CardSuit.Hearts, CardRank.Nine, existingSprites));
+            entries.Add(CreateEntry(CardSuit.Hearts, CardRank.Ten, existingSprites));
+
+            cardSprites = entries.ToArray();
+
+            UnityEditor.EditorUtility.SetDirty(this);
+            Debug.Log($"[CardDatabase] Initialized {cardSprites.Length} card entries (44 total). Assign sprites in Inspector.");
+        }
+
+        private CardSpriteEntry CreateEntry(
+            CardSuit suit,
+            CardRank rank,
+            System.Collections.Generic.Dictionary<(CardSuit, CardRank), Sprite> existingSprites)
+        {
+            existingSprites.TryGetValue((suit, rank), out var sprite);
+            return new CardSpriteEntry(suit, rank, sprite);
         }
 #endif
     }
