@@ -416,7 +416,6 @@ GameObject:
   m_Component:
   - component: {fileID: 85155169}
   - component: {fileID: 85155171}
-  - component: {fileID: 85155170}
   m_Layer: 5
   m_Name: Room_View
   m_TagString: Untagged
@@ -447,30 +446,6 @@ RectTransform:
   m_AnchoredPosition: {x: 0, y: 0}
   m_SizeDelta: {x: 0, y: 0}
   m_Pivot: {x: 0.5, y: 0.5}
---- !u!114 &85155170
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 85155168}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 8a8695521f0d02e499659fee002a26c2, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.GridLayoutGroup
-  m_Padding:
-    m_Left: 0
-    m_Right: 0
-    m_Top: 0
-    m_Bottom: 360
-  m_ChildAlignment: 4
-  m_StartCorner: 0
-  m_StartAxis: 0
-  m_CellSize: {x: 149.1512, y: 223.548}
-  m_Spacing: {x: 47.46, y: 48.73}
-  m_Constraint: 1
-  m_ConstraintCount: 2
 --- !u!114 &85155171
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -563,10 +538,10 @@ RectTransform:
   - {fileID: 21006714}
   m_Father: {fileID: 85155169}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: -98.57126, y: 43.861023}
+  m_SizeDelta: {x: 149.15118, y: 223.548}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &147477434
 MonoBehaviour:
@@ -1092,10 +1067,10 @@ RectTransform:
   - {fileID: 371597322}
   m_Father: {fileID: 85155169}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 98.03995, y: 316.13904}
+  m_SizeDelta: {x: 149.15118, y: 223.548}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &720817716
 MonoBehaviour:
@@ -1524,10 +1499,10 @@ RectTransform:
   - {fileID: 796430677}
   m_Father: {fileID: 85155169}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: -98.57126, y: 316.13904}
+  m_SizeDelta: {x: 149.15118, y: 223.548}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1131790634
 MonoBehaviour:
@@ -1949,10 +1924,10 @@ RectTransform:
   - {fileID: 553111737}
   m_Father: {fileID: 85155169}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
-  m_AnchorMin: {x: 0, y: 0}
-  m_AnchorMax: {x: 0, y: 0}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_AnchorMin: {x: 0.5, y: 0.5}
+  m_AnchorMax: {x: 0.5, y: 0.5}
+  m_AnchoredPosition: {x: 98.03995, y: 43.861023}
+  m_SizeDelta: {x: 149.15118, y: 223.548}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1202681985
 MonoBehaviour:
@@ -3468,6 +3443,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Scoundrel.UI.Animation.CardAnimator
   _roomView: {fileID: 85155171}
+  _deckPosition: {fileID: 1113115684}
   _dealDuration: 0.3
   _dealStaggerDelay: 0.1
   _dealStartScale: 0.3

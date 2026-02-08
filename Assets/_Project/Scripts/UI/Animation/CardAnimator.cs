@@ -15,35 +15,38 @@ namespace Scoundrel.UI.Animation
     /// <summary>
     /// Handles card animations including deal, flip, discard, and interaction feedback.
     /// Uses PrimeTween for smooth animations.
-    /// Works with GridLayoutGroup by only animating scale/alpha, not position.
+    /// Requires GridLayoutGroup to be DISABLED - card slots should be manually positioned.
     /// </summary>
     public class CardAnimator : MonoBehaviour<GameBootstrapper>
     {
         [Header("References")]
         [SerializeField] private RoomView _roomView;
+        [SerializeField] private RectTransform _deckPosition;
 
         [Header("Deal Animation")]
-        [SerializeField] private float _dealDuration = 0.3f;
-        [SerializeField] private float _dealStaggerDelay = 0.1f;
-        [SerializeField] private float _dealStartScale = 0.3f;
+        [SerializeField] private float _dealDuration = 0.35f;
+        [SerializeField] private float _dealStaggerDelay = 0.08f;
+        [SerializeField] private float _dealStartScale = 0.4f;
         [SerializeField] private Ease _dealEase = Ease.OutBack;
 
         [Header("Discard Animation")]
-        [SerializeField] private float _discardDuration = 0.2f;
-        [SerializeField] private float _discardEndScale = 0.3f;
+        [SerializeField] private float _discardDuration = 0.25f;
+        [SerializeField] private float _discardEndScale = 0.2f;
         [SerializeField] private Ease _discardEase = Ease.InBack;
 
         [Header("Interaction Feedback")]
-        [SerializeField] private float _tapPunchStrength = 0.15f;
+        [SerializeField] private float _tapPunchStrength = 0.12f;
         [SerializeField] private float _tapPunchDuration = 0.2f;
 
         [Header("Lock Animation")]
         [SerializeField] private float _lockPulseDuration = 0.4f;
-        [SerializeField] private float _lockPulseStrength = 0.08f;
+        [SerializeField] private float _lockPulseStrength = 0.06f;
 
         private IGameEvents _events;
         private Dictionary<CardData, CardView> _cardViewCache = new Dictionary<CardData, CardView>();
+        private Dictionary<int, Vector3> _slotTargetPositions = new Dictionary<int, Vector3>();
         private bool _isAnimating;
+        private bool _initialized;
 
         protected override void Init(GameBootstrapper gameBootstrapper)
         {
@@ -61,6 +64,9 @@ namespace Scoundrel.UI.Animation
                 _events.OnHeartLockChanged += HandleHeartLockChanged;
                 _events.OnGameStateChanged += HandleGameStateChanged;
             }
+
+            // Cache the target positions of card slots (their initial positions in the scene)
+            CacheSlotPositions();
         }
 
         private void OnDestroy()
@@ -73,6 +79,30 @@ namespace Scoundrel.UI.Animation
                 _events.OnHeartLockChanged -= HandleHeartLockChanged;
                 _events.OnGameStateChanged -= HandleGameStateChanged;
             }
+        }
+
+        /// <summary>
+        /// Caches the original positions of card slots as their target positions.
+        /// Call this once at start before any animations.
+        /// </summary>
+        private void CacheSlotPositions()
+        {
+            if (_roomView == null || _initialized) return;
+
+            for (int i = 0; i < 4; i++)
+            {
+                CardView cardView = _roomView.GetCardView(i);
+                if (cardView == null) continue;
+
+                RectTransform cardRect = cardView.GetComponent<RectTransform>();
+                if (cardRect != null)
+                {
+                    _slotTargetPositions[i] = cardRect.anchoredPosition;
+                }
+            }
+
+            _initialized = true;
+            Debug.Log($"[CardAnimator] Cached {_slotTargetPositions.Count} slot positions");
         }
 
         private void HandleGameStateChanged(GameState newState)
@@ -108,7 +138,7 @@ namespace Scoundrel.UI.Animation
         }
 
         /// <summary>
-        /// Resets all card transforms to default state.
+        /// Resets all card transforms to their default state and positions.
         /// </summary>
         private void ResetAllCardTransforms()
         {
@@ -126,6 +156,12 @@ namespace Scoundrel.UI.Animation
                 {
                     cardRect.localScale = Vector3.one;
                     cardRect.localRotation = Quaternion.identity;
+
+                    // Reset to cached target position
+                    if (_slotTargetPositions.TryGetValue(i, out Vector3 targetPos))
+                    {
+                        cardRect.anchoredPosition = targetPos;
+                    }
                 }
 
                 if (canvasGroup != null)
@@ -136,8 +172,30 @@ namespace Scoundrel.UI.Animation
         }
 
         /// <summary>
-        /// Animates dealing cards to the room with staggered timing.
-        /// Only animates scale and alpha - lets GridLayoutGroup handle positioning.
+        /// Gets the deck start position for deal animations.
+        /// </summary>
+        private Vector2 GetDeckStartPosition(RectTransform cardRect)
+        {
+            if (_deckPosition != null && cardRect != null)
+            {
+                // Get the card's parent (Room_View)
+                RectTransform cardParent = cardRect.parent as RectTransform;
+                if (cardParent != null)
+                {
+                    // Use InverseTransformPoint to convert deck world position to parent's local space
+                    // This works correctly for RectTransforms within the same canvas
+                    Vector3 deckWorldPos = _deckPosition.position;
+                    Vector3 localPos = cardParent.InverseTransformPoint(deckWorldPos);
+                    return new Vector2(localPos.x, localPos.y);
+                }
+            }
+
+            // Fallback: start from bottom-left corner (deck is on left side of screen)
+            return new Vector2(-200f, -300f);
+        }
+
+        /// <summary>
+        /// Animates dealing cards from the deck to their slots with staggered timing.
         /// </summary>
         private async UniTask AnimateDealCardsAsync(IReadOnlyList<CardData> cards)
         {
@@ -145,6 +203,12 @@ namespace Scoundrel.UI.Animation
 
             _isAnimating = true;
             _cardViewCache.Clear();
+
+            // Ensure positions are cached
+            if (!_initialized)
+            {
+                CacheSlotPositions();
+            }
 
             for (int i = 0; i < cards.Count && i < 4; i++)
             {
@@ -158,34 +222,51 @@ namespace Scoundrel.UI.Animation
 
                 if (cardRect == null) continue;
 
-                // Set starting state (small and transparent)
+                // Get target position (cached slot position)
+                Vector2 targetPosition = _slotTargetPositions.TryGetValue(i, out Vector3 cached)
+                    ? (Vector2)cached
+                    : cardRect.anchoredPosition;
+
+                // Get start position (from deck)
+                Vector2 startPosition = GetDeckStartPosition(cardRect);
+
+                // Set starting state
+                cardRect.anchoredPosition = startPosition;
                 cardRect.localScale = Vector3.one * _dealStartScale;
+                cardRect.localRotation = Quaternion.Euler(0, 0, UnityEngine.Random.Range(-15f, 15f));
+
                 if (canvasGroup != null)
                 {
                     canvasGroup.alpha = 0f;
                 }
 
-                // Animate deal with stagger
+                // Animate with stagger
                 float delay = i * _dealStaggerDelay;
 
-                // Scale up to normal size
+                // Position animation (fly from deck to slot)
+                _ = Tween.UIAnchoredPosition(cardRect, targetPosition, _dealDuration, _dealEase, startDelay: delay);
+
+                // Scale up
                 _ = Tween.Scale(cardRect, Vector3.one, _dealDuration, _dealEase, startDelay: delay);
 
-                // Fade in
+                // Rotation to upright
+                _ = Tween.LocalRotation(cardRect, Quaternion.identity, _dealDuration * 0.8f, Ease.OutQuad, startDelay: delay);
+
+                // Fade in (quick)
                 if (canvasGroup != null)
                 {
-                    _ = Tween.Alpha(canvasGroup, 1f, _dealDuration * 0.6f, startDelay: delay);
+                    _ = Tween.Alpha(canvasGroup, 1f, _dealDuration * 0.4f, startDelay: delay);
                 }
             }
 
             // Wait for all animations to complete
-            await UniTask.Delay(TimeSpan.FromSeconds(_dealDuration + (_dealStaggerDelay * cards.Count)));
+            float totalDuration = _dealDuration + (_dealStaggerDelay * Math.Max(0, cards.Count - 1));
+            await UniTask.Delay(TimeSpan.FromSeconds(totalDuration + 0.05f));
             _isAnimating = false;
         }
 
         /// <summary>
-        /// Animates a card being discarded/removed from the room.
-        /// Only animates scale and alpha - no position changes.
+        /// Animates a card being discarded - flies back toward deck.
         /// </summary>
         private async UniTask AnimateCardDiscardAsync(CardData card)
         {
@@ -199,17 +280,60 @@ namespace Scoundrel.UI.Animation
 
             _isAnimating = true;
 
-            // Animate out - shrink and fade
+            // Get the slot index to restore position later
+            int slotIndex = -1;
+            for (int i = 0; i < 4; i++)
+            {
+                if (_roomView.GetCardView(i) == cardView)
+                {
+                    slotIndex = i;
+                    break;
+                }
+            }
+
+            // Determine discard direction based on card type
+            Vector2 discardOffset;
+            float discardRotation;
+
+            if (card.IsMonster)
+            {
+                // Monsters fly toward player (down)
+                discardOffset = new Vector2(0, -300f);
+                discardRotation = UnityEngine.Random.Range(10f, 20f);
+            }
+            else if (card.IsShield)
+            {
+                // Shields fly to the side
+                discardOffset = new Vector2(-250f, -100f);
+                discardRotation = -25f;
+            }
+            else if (card.IsPotion)
+            {
+                // Potions float up and away
+                discardOffset = new Vector2(50f, 200f);
+                discardRotation = 15f;
+            }
+            else
+            {
+                discardOffset = new Vector2(0, -200f);
+                discardRotation = 0f;
+            }
+
+            Vector2 targetPosition = cardRect.anchoredPosition + discardOffset;
+
+            // Animate out
+            _ = Tween.UIAnchoredPosition(cardRect, targetPosition, _discardDuration, _discardEase);
             _ = Tween.Scale(cardRect, Vector3.one * _discardEndScale, _discardDuration, _discardEase);
+            _ = Tween.LocalRotation(cardRect, Quaternion.Euler(0, 0, discardRotation), _discardDuration, _discardEase);
 
             if (canvasGroup != null)
             {
-                _ = Tween.Alpha(canvasGroup, 0f, _discardDuration);
+                _ = Tween.Alpha(canvasGroup, 0f, _discardDuration * 0.8f);
             }
 
             await UniTask.Delay(TimeSpan.FromSeconds(_discardDuration));
 
-            // Reset transform for reuse (important!)
+            // Reset transform for reuse
             cardRect.localScale = Vector3.one;
             cardRect.localRotation = Quaternion.identity;
             if (canvasGroup != null)
@@ -217,12 +341,18 @@ namespace Scoundrel.UI.Animation
                 canvasGroup.alpha = 1f;
             }
 
+            // Restore to original slot position
+            if (slotIndex >= 0 && _slotTargetPositions.TryGetValue(slotIndex, out Vector3 originalPos))
+            {
+                cardRect.anchoredPosition = originalPos;
+            }
+
             _cardViewCache.Remove(card);
             _isAnimating = false;
         }
 
         /// <summary>
-        /// Animates tap/click feedback on a card using punch scale.
+        /// Animates tap/click feedback on a card.
         /// </summary>
         private async UniTask AnimateCardTapAsync(CardData card)
         {
@@ -232,7 +362,7 @@ namespace Scoundrel.UI.Animation
             RectTransform cardRect = cardView.GetComponent<RectTransform>();
             if (cardRect == null) return;
 
-            // Use PrimeTween's PunchScale for a bounce effect
+            // Punch scale for bounce effect
             _ = Tween.PunchScale(cardRect, Vector3.one * _tapPunchStrength, _tapPunchDuration);
 
             await UniTask.Delay(TimeSpan.FromSeconds(_tapPunchDuration));
@@ -254,7 +384,7 @@ namespace Scoundrel.UI.Animation
                 RectTransform cardRect = cardView.GetComponent<RectTransform>();
                 if (cardRect == null) continue;
 
-                // Pulse animation to indicate lock
+                // Shrink pulse to indicate lock
                 _ = Tween.PunchScale(cardRect, Vector3.one * -_lockPulseStrength, _lockPulseDuration);
             }
         }
