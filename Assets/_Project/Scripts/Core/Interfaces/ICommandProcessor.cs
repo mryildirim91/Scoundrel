@@ -42,5 +42,13 @@ namespace Scoundrel.Core.Interfaces
         /// <param name="card">The monster card.</param>
         /// <returns>Damage amount (0 if not a monster).</returns>
         int CalculateDamagePreview(CardData card);
+
+        /// <summary>
+        /// Checks if equipping the given shield card would be a downgrade.
+        /// Used for UI confirmation prompts.
+        /// </summary>
+        /// <param name="card">The shield card to check.</param>
+        /// <returns>True if it would be a downgrade, false otherwise.</returns>
+        bool IsShieldDowngrade(CardData card);
     }
 }

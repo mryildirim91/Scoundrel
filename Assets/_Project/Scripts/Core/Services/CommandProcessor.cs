@@ -193,5 +193,15 @@ namespace Scoundrel.Core.Services
 
             return calculator.Calculate(card.Value, _playerState.ShieldValue);
         }
+
+        /// <summary>
+        /// Checks if equipping the given shield card would be a downgrade.
+        /// Used for UI confirmation prompts.
+        /// </summary>
+        public bool IsShieldDowngrade(CardData card)
+        {
+            if (!card.IsShield) return false;
+            return card.Value < _playerState.ShieldValue;
+        }
     }
 }

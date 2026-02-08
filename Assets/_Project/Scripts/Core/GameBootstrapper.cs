@@ -2,6 +2,7 @@ using Cysharp.Threading.Tasks;
 using Scoundrel.Core.Interfaces;
 using Scoundrel.Core.Services;
 using Scoundrel.ScriptableObjects;
+using Scoundrel.UI.Dialogs;
 using Sisus.Init;
 using UnityEngine;
 
@@ -25,6 +26,7 @@ namespace Scoundrel.Core
         private RoomSystem _roomSystem;
         private CommandProcessor _commandProcessor;
         private GameManager _gameManager;
+        private DialogService _dialogService;
 
         // Public accessors for other components (via DI)
         public IGameEvents Events => _events;
@@ -35,6 +37,7 @@ namespace Scoundrel.Core
         public IGameManager GameManager => _gameManager;
         public IGameSettings Settings => _gameSettings;
         public ICardDatabase CardDatabase => _cardDatabase;
+        public IDialogService DialogService => _dialogService;
 
         protected override void Init(GameSettings gameSettings, CardDatabase cardDatabase)
         {
@@ -55,6 +58,9 @@ namespace Scoundrel.Core
 
         private void OnDestroy()
         {
+            // Close any active dialogs
+            _dialogService?.CloseActiveDialog();
+
             // Cleanup
             _gameManager?.Dispose();
             _events?.ClearAllSubscriptions();
@@ -71,13 +77,15 @@ namespace Scoundrel.Core
             _deckSystem = new DeckSystem(_events);
             _roomSystem = new RoomSystem(_events);
             _commandProcessor = new CommandProcessor(_playerState, _roomSystem, _deckSystem);
+            _dialogService = new DialogService();
             _gameManager = new GameManager(
                 _gameSettings,
                 _events,
                 _playerState,
                 _deckSystem,
                 _roomSystem,
-                _commandProcessor);
+                _commandProcessor,
+                _dialogService);
 
             Debug.Log("[GameBootstrapper] All services created");
         }

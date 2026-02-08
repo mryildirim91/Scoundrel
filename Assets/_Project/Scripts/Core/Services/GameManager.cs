@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Cysharp.Threading.Tasks;
+using Scoundrel.Core.Commands;
 using Scoundrel.Core.Data;
 using Scoundrel.Core.Enums;
 using Scoundrel.Core.Interfaces;
@@ -25,6 +26,7 @@ namespace Scoundrel.Core.Services
         private readonly IDeckSystem _deckSystem;
         private readonly IRoomSystem _roomSystem;
         private readonly ICommandProcessor _commandProcessor;
+        private readonly IDialogService _dialogService;
 
         private GameState _currentState;
         private GameResult _result;
@@ -32,7 +34,7 @@ namespace Scoundrel.Core.Services
         public GameState CurrentState => _currentState;
         public GameResult Result => _result;
         public bool IsGameActive => _currentState != GameState.GameOver;
-        public bool CanAcceptInput => _currentState == GameState.PlayerTurn;
+        public bool CanAcceptInput => _currentState == GameState.PlayerTurn && !(_dialogService?.IsDialogActive ?? false);
 
         /// <summary>
         /// Creates a new GameManager with all required dependencies.
@@ -43,7 +45,8 @@ namespace Scoundrel.Core.Services
             IPlayerState playerState,
             IDeckSystem deckSystem,
             IRoomSystem roomSystem,
-            ICommandProcessor commandProcessor)
+            ICommandProcessor commandProcessor,
+            IDialogService dialogService = null)
         {
             _settings = settings ?? throw new ArgumentNullException(nameof(settings));
             _events = events ?? throw new ArgumentNullException(nameof(events));
@@ -51,6 +54,7 @@ namespace Scoundrel.Core.Services
             _deckSystem = deckSystem ?? throw new ArgumentNullException(nameof(deckSystem));
             _roomSystem = roomSystem ?? throw new ArgumentNullException(nameof(roomSystem));
             _commandProcessor = commandProcessor ?? throw new ArgumentNullException(nameof(commandProcessor));
+            _dialogService = dialogService;
 
             _currentState = GameState.Initializing;
             _result = GameResult.None;
@@ -65,6 +69,9 @@ namespace Scoundrel.Core.Services
         public async UniTask StartGameAsync()
         {
             Debug.Log("[GameManager] Starting new game...");
+
+            // Close any active dialogs
+            _dialogService?.CloseActiveDialog();
 
             // Transition to Initializing state
             SetState(GameState.Initializing);
@@ -92,6 +99,28 @@ namespace Scoundrel.Core.Services
             }
 
             Debug.Log($"[GameManager] Player selected: {card}");
+
+            // Check if this is a shield downgrade that requires confirmation
+            if (card.IsShield && _dialogService != null)
+            {
+                bool isDowngrade = card.Value < _playerState.ShieldValue;
+                if (isDowngrade)
+                {
+                    Debug.Log($"[GameManager] Shield downgrade detected: {_playerState.ShieldValue} -> {card.Value}");
+
+                    bool confirmed = await _dialogService.ShowShieldDowngradeConfirmAsync(
+                        _playerState.ShieldValue,
+                        card.Value);
+
+                    if (!confirmed)
+                    {
+                        Debug.Log("[GameManager] Shield downgrade cancelled by user");
+                        return;
+                    }
+
+                    Debug.Log("[GameManager] Shield downgrade confirmed by user");
+                }
+            }
 
             // Transition to Processing state
             SetState(GameState.Processing);
