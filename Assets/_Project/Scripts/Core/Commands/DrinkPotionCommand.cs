@@ -7,7 +7,7 @@ namespace Scoundrel.Core.Commands
 {
     /// <summary>
     /// Command to drink a potion card (Heart).
-    /// Heals the player and activates the overdose lock on other hearts.
+    /// Heals the player (capped at MaxHP).
     /// </summary>
     public sealed class DrinkPotionCommand : ICommand
     {
@@ -32,7 +32,7 @@ namespace Scoundrel.Core.Commands
         }
 
         /// <summary>
-        /// Validates that the card is a potion, exists in the room, and hearts are not locked.
+        /// Validates that the card is a potion and exists in the room.
         /// </summary>
         public bool CanExecute()
         {
@@ -48,17 +48,11 @@ namespace Scoundrel.Core.Commands
                 return false;
             }
 
-            if (_playerState.IsHeartLocked)
-            {
-                Debug.LogWarning($"[DrinkPotionCommand] Cannot execute: Hearts are locked (overdose).");
-                return false;
-            }
-
             return true;
         }
 
         /// <summary>
-        /// Executes the potion: heals player, removes card, locks hearts.
+        /// Executes the potion: heals player, removes card.
         /// </summary>
         public UniTask ExecuteAsync()
         {
@@ -75,9 +69,6 @@ namespace Scoundrel.Core.Commands
 
             // Remove card from room
             _roomSystem.RemoveCard(_card);
-
-            // Drinking a potion locks other hearts (overdose mechanic)
-            _playerState.SetHeartLock(true);
 
             return UniTask.CompletedTask;
         }

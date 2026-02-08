@@ -186,7 +186,6 @@ namespace Scoundrel.Core
             // Player state
             GUILayout.Label($"HP: <color=red>{_playerState.CurrentHP}</color> / {_playerState.MaxHP}", _labelStyle);
             GUILayout.Label($"Shield: <color=cyan>{_playerState.ShieldValue}</color>", _labelStyle);
-            GUILayout.Label($"Heart Lock: {(_playerState.IsHeartLocked ? "<color=orange>LOCKED</color>" : "No")}", _labelStyle);
             GUILayout.Label($"Can Run: {(_playerState.CanRun ? "Yes" : "<color=gray>No</color>")}", _labelStyle);
             GUILayout.Space(10);
 
@@ -205,9 +204,8 @@ namespace Scoundrel.Core
             {
                 foreach (var card in _roomSystem.CurrentCards)
                 {
-                    string lockStatus = card.IsPotion && _playerState.IsHeartLocked ? " <color=orange>[LOCKED]</color>" : "";
                     string cardColor = card.IsMonster ? "red" : card.IsShield ? "cyan" : "lime";
-                    GUILayout.Label($"  - <color={cardColor}>{card}</color>{lockStatus}", _labelStyle);
+                    GUILayout.Label($"  - <color={cardColor}>{card}</color>", _labelStyle);
                 }
             }
 
@@ -233,12 +231,9 @@ namespace Scoundrel.Core
                 for (int i = 0; i < _roomSystem.CardCount; i++)
                 {
                     var card = _roomSystem.CurrentCards[i];
-                    bool isLocked = card.IsPotion && _playerState.IsHeartLocked;
-                    string buttonText = isLocked
-                        ? $"{card} [LOCKED]"
-                        : $"{card}";
+                    string buttonText = $"{card}";
 
-                    GUI.enabled = canInteract && !isLocked;
+                    GUI.enabled = canInteract;
                     if (GUILayout.Button(buttonText, _buttonStyle))
                     {
                         OnCardClicked(i);

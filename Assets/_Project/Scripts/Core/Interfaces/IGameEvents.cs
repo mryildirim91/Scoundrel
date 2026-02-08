@@ -22,11 +22,6 @@ namespace Scoundrel.Core.Interfaces
         event Action<int> OnShieldChanged;
 
         /// <summary>
-        /// Fired when heart lock state changes (overdose mechanic). Parameter: isLocked
-        /// </summary>
-        event Action<bool> OnHeartLockChanged;
-
-        /// <summary>
         /// Fired when run availability changes. Parameter: canRun
         /// </summary>
         event Action<bool> OnRunAvailableChanged;

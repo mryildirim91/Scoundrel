@@ -9,7 +9,6 @@ namespace Scoundrel.Core.Commands
     /// <summary>
     /// Command to fight a monster card (Spades or Clubs).
     /// Calculates damage based on suit affinity and applies it to player.
-    /// Also unlocks hearts (clears overdose state) after fighting.
     /// </summary>
     public sealed class FightMonsterCommand : ICommand
     {
@@ -62,7 +61,7 @@ namespace Scoundrel.Core.Commands
         }
 
         /// <summary>
-        /// Executes the fight: calculates and applies damage, removes card, unlocks hearts.
+        /// Executes the fight: calculates and applies damage, removes card.
         /// </summary>
         public UniTask ExecuteAsync()
         {
@@ -84,9 +83,6 @@ namespace Scoundrel.Core.Commands
 
             // Remove card from room
             _roomSystem.RemoveCard(_card);
-
-            // Fighting a monster unlocks hearts (non-heart interaction)
-            _playerState.SetHeartLock(false);
 
             return UniTask.CompletedTask;
         }

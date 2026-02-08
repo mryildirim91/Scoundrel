@@ -15,7 +15,6 @@ namespace Scoundrel.Core.Services
     {
         public event Action<int, int> OnHPChanged;
         public event Action<int> OnShieldChanged;
-        public event Action<bool> OnHeartLockChanged;
         public event Action<bool> OnRunAvailableChanged;
         public event Action<CardData> OnCardInteracted;
         public event Action<GameState> OnGameStateChanged;
@@ -42,15 +41,6 @@ namespace Scoundrel.Core.Services
         public void RaiseShieldChanged(int newShield)
         {
             OnShieldChanged?.Invoke(newShield);
-        }
-
-        /// <summary>
-        /// Raises the heart lock changed event (overdose mechanic).
-        /// </summary>
-        /// <param name="isLocked">Whether hearts are now locked.</param>
-        public void RaiseHeartLockChanged(bool isLocked)
-        {
-            OnHeartLockChanged?.Invoke(isLocked);
         }
 
         /// <summary>
@@ -131,7 +121,6 @@ namespace Scoundrel.Core.Services
         {
             OnHPChanged = null;
             OnShieldChanged = null;
-            OnHeartLockChanged = null;
             OnRunAvailableChanged = null;
             OnCardInteracted = null;
             OnGameStateChanged = null;

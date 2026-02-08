@@ -122,7 +122,6 @@ namespace Scoundrel.UI.Views
             _events.OnRoomDealt += HandleRoomDealt;
             _events.OnCardRemovedFromRoom += HandleCardRemoved;
             _events.OnRoomCleared += HandleRoomCleared;
-            _events.OnHeartLockChanged += HandleHeartLockChanged;
             _events.OnGameStateChanged += HandleGameStateChanged;
         }
 
@@ -133,7 +132,6 @@ namespace Scoundrel.UI.Views
             _events.OnRoomDealt -= HandleRoomDealt;
             _events.OnCardRemovedFromRoom -= HandleCardRemoved;
             _events.OnRoomCleared -= HandleRoomCleared;
-            _events.OnHeartLockChanged -= HandleHeartLockChanged;
             _events.OnGameStateChanged -= HandleGameStateChanged;
         }
 
@@ -150,12 +148,6 @@ namespace Scoundrel.UI.Views
                 if (_cardSlots[i] != null)
                 {
                     _cardSlots[i].SetCard(cards[i], i);
-
-                    // Check if this is a locked potion
-                    if (cards[i].IsPotion && _playerState != null && _playerState.IsHeartLocked)
-                    {
-                        _cardSlots[i].SetLocked(true);
-                    }
                 }
             }
         }
@@ -179,20 +171,6 @@ namespace Scoundrel.UI.Views
         {
             Debug.Log("[RoomView] Room cleared");
             HideAllCards();
-        }
-
-        private void HandleHeartLockChanged(bool isLocked)
-        {
-            Debug.Log($"[RoomView] Heart lock changed: {isLocked}");
-
-            // Update lock state on all potion cards
-            foreach (var slot in _cardSlots)
-            {
-                if (slot != null && slot.gameObject.activeSelf && slot.CardData.IsPotion)
-                {
-                    slot.SetLocked(isLocked);
-                }
-            }
         }
 
         private void HandleGameStateChanged(Core.Enums.GameState newState)

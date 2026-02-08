@@ -9,7 +9,7 @@ namespace Scoundrel.UI.Views
 {
     /// <summary>
     /// Visual representation of a card in the room.
-    /// Handles display, interaction, and lock state visualization.
+    /// Handles display and interaction.
     /// </summary>
     [RequireComponent(typeof(Image))]
     [RequireComponent(typeof(Button))]
@@ -18,7 +18,6 @@ namespace Scoundrel.UI.Views
         [Header("Components")]
         [SerializeField] private Image _cardImage;
         [SerializeField] private Button _button;
-        [SerializeField] private Image _lockOverlay;
         [SerializeField] private CanvasGroup _canvasGroup;
         [SerializeField] private CardInputHandler _inputHandler;
 
@@ -28,7 +27,6 @@ namespace Scoundrel.UI.Views
         private CardData _cardData;
         private ICardDatabase _cardDatabase;
         private int _slotIndex;
-        private bool _isLocked;
         private bool _useInputHandler;
 
         /// <summary>
@@ -109,10 +107,7 @@ namespace Scoundrel.UI.Views
 
         private void HandleInputHandlerClick(CardData card)
         {
-            if (!_isLocked)
-            {
-                OnCardClicked?.Invoke(this);
-            }
+            OnCardClicked?.Invoke(this);
         }
 
         /// <summary>
@@ -122,7 +117,6 @@ namespace Scoundrel.UI.Views
         {
             _cardData = card;
             _slotIndex = slotIndex;
-            _isLocked = false;
 
             // Update sprite
             if (_cardDatabase != null)
@@ -143,7 +137,6 @@ namespace Scoundrel.UI.Views
             // Ensure visible
             gameObject.SetActive(true);
             SetInteractable(true);
-            SetLocked(false);
         }
 
         /// <summary>
@@ -162,47 +155,18 @@ namespace Scoundrel.UI.Views
         /// </summary>
         public void SetInteractable(bool interactable)
         {
-            bool canInteract = interactable && !_isLocked;
-
             // Only set button interactable if not using input handler for clicks
-            _button.interactable = _useInputHandler ? false : canInteract;
+            _button.interactable = _useInputHandler ? false : interactable;
 
             // Update input handler
             if (_inputHandler != null)
             {
-                _inputHandler.SetInteractable(canInteract);
+                _inputHandler.SetInteractable(interactable);
             }
 
             if (_canvasGroup != null)
             {
-                _canvasGroup.alpha = canInteract ? 1f : _disabledAlpha;
-            }
-        }
-
-        /// <summary>
-        /// Sets the locked state (for overdose mechanic on potions).
-        /// </summary>
-        public void SetLocked(bool locked)
-        {
-            _isLocked = locked;
-
-            if (_lockOverlay != null)
-            {
-                _lockOverlay.gameObject.SetActive(locked);
-            }
-
-            // Only set button interactable if not using input handler
-            _button.interactable = _useInputHandler ? false : !locked;
-
-            // Update input handler
-            if (_inputHandler != null)
-            {
-                _inputHandler.SetInteractable(!locked);
-            }
-
-            if (_canvasGroup != null)
-            {
-                _canvasGroup.alpha = locked ? _disabledAlpha : 1f;
+                _canvasGroup.alpha = interactable ? 1f : _disabledAlpha;
             }
         }
 
@@ -224,10 +188,7 @@ namespace Scoundrel.UI.Views
 
         private void HandleClick()
         {
-            if (!_isLocked)
-            {
-                OnCardClicked?.Invoke(this);
-            }
+            OnCardClicked?.Invoke(this);
         }
 
 #if UNITY_EDITOR

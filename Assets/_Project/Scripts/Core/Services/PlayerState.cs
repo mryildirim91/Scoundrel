@@ -5,7 +5,7 @@ using UnityEngine;
 namespace Scoundrel.Core.Services
 {
     /// <summary>
-    /// Manages player state including HP, Shield, HeartLock, and RunAvailable.
+    /// Manages player state including HP, Shield, and RunAvailable.
     /// Fires events via GameEvents when state changes.
     /// </summary>
     public sealed class PlayerState : IPlayerState
@@ -15,13 +15,11 @@ namespace Scoundrel.Core.Services
 
         private int _currentHP;
         private int _shieldValue;
-        private bool _isHeartLocked;
         private bool _canRun;
 
         public int CurrentHP => _currentHP;
         public int MaxHP => _settings.MaxHP;
         public int ShieldValue => _shieldValue;
-        public bool IsHeartLocked => _isHeartLocked;
         public bool CanRun => _canRun;
         public bool IsAlive => _currentHP > 0;
 
@@ -85,20 +83,6 @@ namespace Scoundrel.Core.Services
         }
 
         /// <summary>
-        /// Sets the heart lock state (overdose mechanic).
-        /// When locked, player cannot use potion cards until unlocked.
-        /// </summary>
-        public void SetHeartLock(bool locked)
-        {
-            if (_isHeartLocked == locked) return;
-
-            _isHeartLocked = locked;
-            _events.RaiseHeartLockChanged(_isHeartLocked);
-
-            Debug.Log($"[PlayerState] HeartLock: {_isHeartLocked}");
-        }
-
-        /// <summary>
         /// Sets whether the player can run.
         /// </summary>
         public void SetCanRun(bool canRun)
@@ -126,13 +110,11 @@ namespace Scoundrel.Core.Services
         {
             _currentHP = _settings.StartingHP;
             _shieldValue = _settings.StartingShield;
-            _isHeartLocked = false;
             _canRun = true;
 
             // Fire initial state events
             _events.RaiseHPChanged(_currentHP, 0);
             _events.RaiseShieldChanged(_shieldValue);
-            _events.RaiseHeartLockChanged(_isHeartLocked);
             _events.RaiseRunAvailableChanged(_canRun);
 
             Debug.Log($"[PlayerState] Reset - HP: {_currentHP}, Shield: {_shieldValue}");

@@ -22,12 +22,6 @@ namespace Scoundrel.Core.Interfaces
         int ShieldValue { get; }
 
         /// <summary>
-        /// Whether hearts are locked due to overdose rule.
-        /// True after drinking a potion, false after interacting with non-heart.
-        /// </summary>
-        bool IsHeartLocked { get; }
-
-        /// <summary>
         /// Whether the player can currently use the Run action.
         /// False after running, true after clearing or interacting with next room.
         /// </summary>
@@ -52,11 +46,6 @@ namespace Scoundrel.Core.Interfaces
         /// Sets the shield value (from Diamond cards).
         /// </summary>
         void SetShield(int value);
-
-        /// <summary>
-        /// Sets the heart lock state (overdose mechanic).
-        /// </summary>
-        void SetHeartLock(bool locked);
 
         /// <summary>
         /// Sets whether the player can run.

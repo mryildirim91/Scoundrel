@@ -38,10 +38,6 @@ namespace Scoundrel.UI.Animation
         [SerializeField] private float _tapPunchStrength = 0.12f;
         [SerializeField] private float _tapPunchDuration = 0.2f;
 
-        [Header("Lock Animation")]
-        [SerializeField] private float _lockPulseDuration = 0.4f;
-        [SerializeField] private float _lockPulseStrength = 0.06f;
-
         private IGameEvents _events;
         private Dictionary<CardData, CardView> _cardViewCache = new Dictionary<CardData, CardView>();
         private Dictionary<int, Vector3> _slotTargetPositions = new Dictionary<int, Vector3>();
@@ -61,7 +57,6 @@ namespace Scoundrel.UI.Animation
                 _events.OnRoomDealt += HandleRoomDealt;
                 _events.OnCardRemovedFromRoom += HandleCardRemoved;
                 _events.OnCardInteracted += HandleCardInteracted;
-                _events.OnHeartLockChanged += HandleHeartLockChanged;
                 _events.OnGameStateChanged += HandleGameStateChanged;
             }
 
@@ -76,7 +71,6 @@ namespace Scoundrel.UI.Animation
                 _events.OnRoomDealt -= HandleRoomDealt;
                 _events.OnCardRemovedFromRoom -= HandleCardRemoved;
                 _events.OnCardInteracted -= HandleCardInteracted;
-                _events.OnHeartLockChanged -= HandleHeartLockChanged;
                 _events.OnGameStateChanged -= HandleGameStateChanged;
             }
         }
@@ -127,14 +121,6 @@ namespace Scoundrel.UI.Animation
         private void HandleCardInteracted(CardData card)
         {
             AnimateCardTapAsync(card).Forget();
-        }
-
-        private void HandleHeartLockChanged(bool isLocked)
-        {
-            if (isLocked)
-            {
-                AnimatePotionLock();
-            }
         }
 
         /// <summary>
@@ -366,27 +352,6 @@ namespace Scoundrel.UI.Animation
             _ = Tween.PunchScale(cardRect, Vector3.one * _tapPunchStrength, _tapPunchDuration);
 
             await UniTask.Delay(TimeSpan.FromSeconds(_tapPunchDuration));
-        }
-
-        /// <summary>
-        /// Animates potion cards becoming locked due to overdose mechanic.
-        /// </summary>
-        private void AnimatePotionLock()
-        {
-            if (_roomView == null) return;
-
-            for (int i = 0; i < 4; i++)
-            {
-                CardView cardView = _roomView.GetCardView(i);
-                if (cardView == null || !cardView.gameObject.activeSelf) continue;
-                if (!cardView.CardData.IsPotion) continue;
-
-                RectTransform cardRect = cardView.GetComponent<RectTransform>();
-                if (cardRect == null) continue;
-
-                // Shrink pulse to indicate lock
-                _ = Tween.PunchScale(cardRect, Vector3.one * -_lockPulseStrength, _lockPulseDuration);
-            }
         }
 
         /// <summary>

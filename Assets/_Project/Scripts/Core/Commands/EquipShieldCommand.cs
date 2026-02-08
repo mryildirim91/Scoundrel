@@ -7,7 +7,7 @@ namespace Scoundrel.Core.Commands
 {
     /// <summary>
     /// Command to equip a shield card (Diamond).
-    /// Sets the player's shield value and unlocks hearts.
+    /// Sets the player's shield value.
     /// Note: Shield downgrade confirmation should be handled by UI before creating this command.
     /// </summary>
     public sealed class EquipShieldCommand : ICommand
@@ -53,7 +53,7 @@ namespace Scoundrel.Core.Commands
         }
 
         /// <summary>
-        /// Executes the shield equip: sets shield value, removes card, unlocks hearts.
+        /// Executes the shield equip: sets shield value, removes card.
         /// </summary>
         public UniTask ExecuteAsync()
         {
@@ -67,9 +67,6 @@ namespace Scoundrel.Core.Commands
 
             // Remove card from room
             _roomSystem.RemoveCard(_card);
-
-            // Equipping a shield unlocks hearts (non-heart interaction)
-            _playerState.SetHeartLock(false);
 
             return UniTask.CompletedTask;
         }
