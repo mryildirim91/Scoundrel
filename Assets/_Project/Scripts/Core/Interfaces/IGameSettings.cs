@@ -37,8 +37,9 @@ namespace Scoundrel.Core.Interfaces
         float ClubsShieldEfficiency { get; }
 
         /// <summary>
-        /// Minimum cards required in room to run (default: 3).
+        /// Number of cards to deal from deck on Safe Exit (default: 3).
+        /// Fills room back to RoomSize when 1 card remains.
         /// </summary>
-        int MinCardsToRun { get; }
+        int SafeExitFillCount { get; }
     }
 }

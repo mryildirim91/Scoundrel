@@ -23,6 +23,7 @@ namespace Scoundrel.Core.Services
         public event Action OnRoomCleared;
         public event Action<int> OnDeckCountChanged;
         public event Action<CardData> OnCardRemovedFromRoom;
+        public event Action<IReadOnlyList<CardData>> OnCardsAddedToRoom;
 
         /// <summary>
         /// Raises the HP changed event.
@@ -115,6 +116,16 @@ namespace Scoundrel.Core.Services
         }
 
         /// <summary>
+        /// Raises the cards added to room event (Safe Exit).
+        /// Unlike RaiseRoomDealt, this indicates cards were added to an existing room.
+        /// </summary>
+        /// <param name="newCards">The newly added cards only.</param>
+        public void RaiseCardsAddedToRoom(IReadOnlyList<CardData> newCards)
+        {
+            OnCardsAddedToRoom?.Invoke(newCards);
+        }
+
+        /// <summary>
         /// Clears all event subscriptions. Useful for cleanup.
         /// </summary>
         public void ClearAllSubscriptions()
@@ -129,6 +140,7 @@ namespace Scoundrel.Core.Services
             OnRoomCleared = null;
             OnDeckCountChanged = null;
             OnCardRemovedFromRoom = null;
+            OnCardsAddedToRoom = null;
         }
     }
 }

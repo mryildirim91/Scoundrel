@@ -76,7 +76,7 @@ namespace Scoundrel.Core
             _playerState = new PlayerState(_gameSettings, _events);
             _deckSystem = new DeckSystem(_events);
             _roomSystem = new RoomSystem(_events);
-            _commandProcessor = new CommandProcessor(_playerState, _roomSystem, _deckSystem);
+            _commandProcessor = new CommandProcessor(_playerState, _roomSystem, _deckSystem, _gameSettings);
             _dialogService = new DialogService();
             _gameManager = new GameManager(
                 _gameSettings,
@@ -249,15 +249,23 @@ namespace Scoundrel.Core
                 }
                 GUI.enabled = true;
 
-                // Run button
+                // Run button (tri-state: Tactical Retreat / Safe Exit / Dead Zone)
                 GUILayout.Space(10);
-                bool canRun = canInteract && _playerState.CanRun && _roomSystem.CardCount >= 3;
-                GUI.enabled = canRun;
-                string runText = !_playerState.CanRun
-                    ? "RUN (used last turn)"
-                    : _roomSystem.CardCount < 3
-                        ? $"RUN (need 3+ cards)"
-                        : "RUN (-1 HP)";
+                int roomCount = _roomSystem.CardCount;
+                bool canTacticalRetreat = canInteract && _playerState.CanRun && roomCount == 4 && _playerState.CurrentHP > 1;
+                bool canSafeExit = canInteract && roomCount == 1 && !_deckSystem.IsEmpty;
+                bool canRunAny = canTacticalRetreat || canSafeExit;
+
+                GUI.enabled = canRunAny;
+                string runText = canTacticalRetreat
+                    ? "TACTICAL RETREAT (-1 HP)"
+                    : canSafeExit
+                        ? "SAFE EXIT (FREE)"
+                        : !_playerState.CanRun && roomCount == 4
+                            ? "RUN (cooldown)"
+                            : roomCount == 1 && _deckSystem.IsEmpty
+                                ? "SAFE EXIT (deck empty)"
+                                : $"RUN (dead zone: {roomCount} cards)";
                 if (GUILayout.Button(runText, _buttonStyle))
                 {
                     OnRunClicked();

@@ -25,8 +25,8 @@ namespace Scoundrel.ScriptableObjects
         [SerializeField, Tooltip("HP cost to run from a room")]
         private int runCost = 1;
 
-        [SerializeField, Tooltip("Minimum cards required in room to run")]
-        private int minCardsToRun = 3;
+        [SerializeField, Tooltip("Number of cards to deal from deck on Safe Exit (fills room back to RoomSize)")]
+        private int safeExitFillCount = 3;
 
         [Header("Room Settings")]
         [SerializeField, Tooltip("Number of cards dealt per room")]
@@ -43,7 +43,7 @@ namespace Scoundrel.ScriptableObjects
         public int RunCost => runCost;
         public int RoomSize => roomSize;
         public float ClubsShieldEfficiency => clubsShieldEfficiency;
-        public int MinCardsToRun => minCardsToRun;
+        public int SafeExitFillCount => safeExitFillCount;
 
 #if UNITY_EDITOR
         private void OnValidate()
@@ -54,7 +54,7 @@ namespace Scoundrel.ScriptableObjects
             startingShield = Mathf.Max(0, startingShield);
             runCost = Mathf.Max(0, runCost);
             roomSize = Mathf.Clamp(roomSize, 1, 10);
-            minCardsToRun = Mathf.Clamp(minCardsToRun, 1, roomSize);
+            safeExitFillCount = Mathf.Clamp(safeExitFillCount, 1, roomSize - 1);
         }
 #endif
     }

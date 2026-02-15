@@ -58,6 +58,7 @@ namespace Scoundrel.UI.Animation
                 _events.OnCardRemovedFromRoom += HandleCardRemoved;
                 _events.OnCardInteracted += HandleCardInteracted;
                 _events.OnGameStateChanged += HandleGameStateChanged;
+                _events.OnCardsAddedToRoom += HandleCardsAdded;
             }
 
             // Cache the target positions of card slots (their initial positions in the scene)
@@ -72,6 +73,7 @@ namespace Scoundrel.UI.Animation
                 _events.OnCardRemovedFromRoom -= HandleCardRemoved;
                 _events.OnCardInteracted -= HandleCardInteracted;
                 _events.OnGameStateChanged -= HandleGameStateChanged;
+                _events.OnCardsAddedToRoom -= HandleCardsAdded;
             }
         }
 
@@ -121,6 +123,11 @@ namespace Scoundrel.UI.Animation
         private void HandleCardInteracted(CardData card)
         {
             AnimateCardTapAsync(card).Forget();
+        }
+
+        private void HandleCardsAdded(IReadOnlyList<CardData> newCards)
+        {
+            AnimateCardsAddedAsync(newCards).Forget();
         }
 
         /// <summary>
@@ -247,6 +254,97 @@ namespace Scoundrel.UI.Animation
 
             // Wait for all animations to complete
             float totalDuration = _dealDuration + (_dealStaggerDelay * Math.Max(0, cards.Count - 1));
+            await UniTask.Delay(TimeSpan.FromSeconds(totalDuration + 0.05f));
+            _isAnimating = false;
+        }
+
+        /// <summary>
+        /// Animates Safe Exit card additions - new cards fly from deck to empty slots.
+        /// Only animates the newly added cards; the carried-over card is untouched.
+        /// </summary>
+        private async UniTask AnimateCardsAddedAsync(IReadOnlyList<CardData> newCards)
+        {
+            if (_roomView == null) return;
+
+            _isAnimating = true;
+
+            // Ensure positions are cached
+            if (!_initialized)
+            {
+                CacheSlotPositions();
+            }
+
+            // Find which slots received the new cards (the ones that were previously hidden/empty).
+            // RoomView.HandleCardsAdded fills hidden slots in order, so we replicate that logic
+            // to find the correct slot indices for the new cards.
+            List<int> newCardSlotIndices = new List<int>();
+            int newCardIndex = 0;
+            for (int i = 0; i < 4 && newCardIndex < newCards.Count; i++)
+            {
+                CardView cardView = _roomView.GetCardView(i);
+                if (cardView == null) continue;
+
+                // A slot that just received a new card will be active and contain one of the new cards.
+                // We check if this card view's data matches the new card.
+                if (cardView.gameObject.activeSelf && cardView.CardData.Equals(newCards[newCardIndex]))
+                {
+                    newCardSlotIndices.Add(i);
+                    _cardViewCache[newCards[newCardIndex]] = cardView;
+                    newCardIndex++;
+                }
+            }
+
+            // Animate each newly added card from deck to its slot
+            for (int j = 0; j < newCardSlotIndices.Count; j++)
+            {
+                int slotIndex = newCardSlotIndices[j];
+                CardView cardView = _roomView.GetCardView(slotIndex);
+                if (cardView == null) continue;
+
+                RectTransform cardRect = cardView.GetComponent<RectTransform>();
+                CanvasGroup canvasGroup = cardView.GetComponent<CanvasGroup>();
+
+                if (cardRect == null) continue;
+
+                // Get target position (cached slot position)
+                Vector2 targetPosition = _slotTargetPositions.TryGetValue(slotIndex, out Vector3 cached)
+                    ? (Vector2)cached
+                    : cardRect.anchoredPosition;
+
+                // Get start position (from deck)
+                Vector2 startPosition = GetDeckStartPosition(cardRect);
+
+                // Set starting state
+                cardRect.anchoredPosition = startPosition;
+                cardRect.localScale = Vector3.one * _dealStartScale;
+                cardRect.localRotation = Quaternion.Euler(0, 0, UnityEngine.Random.Range(-15f, 15f));
+
+                if (canvasGroup != null)
+                {
+                    canvasGroup.alpha = 0f;
+                }
+
+                // Animate with stagger (based on j, not slotIndex, for consistent timing)
+                float delay = j * _dealStaggerDelay;
+
+                // Position animation (fly from deck to slot)
+                _ = Tween.UIAnchoredPosition(cardRect, targetPosition, _dealDuration, _dealEase, startDelay: delay);
+
+                // Scale up
+                _ = Tween.Scale(cardRect, Vector3.one, _dealDuration, _dealEase, startDelay: delay);
+
+                // Rotation to upright
+                _ = Tween.LocalRotation(cardRect, Quaternion.identity, _dealDuration * 0.8f, Ease.OutQuad, startDelay: delay);
+
+                // Fade in (quick)
+                if (canvasGroup != null)
+                {
+                    _ = Tween.Alpha(canvasGroup, 1f, _dealDuration * 0.4f, startDelay: delay);
+                }
+            }
+
+            // Wait for all animations to complete
+            float totalDuration = _dealDuration + (_dealStaggerDelay * Math.Max(0, newCardSlotIndices.Count - 1));
             await UniTask.Delay(TimeSpan.FromSeconds(totalDuration + 0.05f));
             _isAnimating = false;
         }

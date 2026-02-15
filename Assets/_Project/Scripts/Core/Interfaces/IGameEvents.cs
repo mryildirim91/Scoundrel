@@ -60,5 +60,12 @@ namespace Scoundrel.Core.Interfaces
         /// Fired when a card is removed from the room. Parameter: card data
         /// </summary>
         event Action<CardData> OnCardRemovedFromRoom;
+
+        /// <summary>
+        /// Fired when cards are added to an existing room (Safe Exit).
+        /// Unlike OnRoomDealt, this does not replace existing cards.
+        /// Parameter: the newly added cards only.
+        /// </summary>
+        event Action<IReadOnlyList<CardData>> OnCardsAddedToRoom;
     }
 }

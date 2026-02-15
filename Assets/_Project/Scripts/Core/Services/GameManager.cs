@@ -138,6 +138,13 @@ namespace Scoundrel.Core.Services
                 return;
             }
 
+            // Re-enable Tactical Retreat after engaging with a card in this room.
+            // This clears the cooldown from a previous Tactical Retreat.
+            if (!_playerState.CanRun)
+            {
+                _playerState.SetCanRun(true);
+            }
+
             // Check for game end conditions after processing
             await CheckGameEndConditionsAsync();
         }
@@ -240,9 +247,9 @@ namespace Scoundrel.Core.Services
             // If room is empty but deck has cards, deal new room
             if (_roomSystem.IsEmpty && !_deckSystem.IsEmpty)
             {
-                // Re-enable running for new room (if it was disabled)
-                _playerState.SetCanRun(true);
-
+                // Do NOT re-enable CanRun here.
+                // After Tactical Retreat, CanRun stays false (cooldown preserved).
+                // CanRun is re-enabled when player interacts with a card or uses Safe Exit.
                 await DealRoomAsync();
                 return;
             }

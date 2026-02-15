@@ -123,6 +123,7 @@ namespace Scoundrel.UI.Views
             _events.OnCardRemovedFromRoom += HandleCardRemoved;
             _events.OnRoomCleared += HandleRoomCleared;
             _events.OnGameStateChanged += HandleGameStateChanged;
+            _events.OnCardsAddedToRoom += HandleCardsAdded;
         }
 
         private void UnsubscribeFromEvents()
@@ -133,6 +134,7 @@ namespace Scoundrel.UI.Views
             _events.OnCardRemovedFromRoom -= HandleCardRemoved;
             _events.OnRoomCleared -= HandleRoomCleared;
             _events.OnGameStateChanged -= HandleGameStateChanged;
+            _events.OnCardsAddedToRoom -= HandleCardsAdded;
         }
 
         private void HandleRoomDealt(IReadOnlyList<CardData> cards)
@@ -163,6 +165,25 @@ namespace Scoundrel.UI.Views
                 {
                     slot.Hide();
                     break;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Handles Safe Exit: new cards are added to the room without clearing existing ones.
+        /// Finds empty (hidden) slots and places new cards in them.
+        /// </summary>
+        private void HandleCardsAdded(IReadOnlyList<CardData> newCards)
+        {
+            Debug.Log($"[RoomView] Cards added to room: {newCards.Count} new cards");
+
+            int newCardIndex = 0;
+            for (int i = 0; i < _cardSlots.Length && newCardIndex < newCards.Count; i++)
+            {
+                if (_cardSlots[i] != null && !_cardSlots[i].gameObject.activeSelf)
+                {
+                    _cardSlots[i].SetCard(newCards[newCardIndex], i);
+                    newCardIndex++;
                 }
             }
         }

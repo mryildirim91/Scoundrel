@@ -17,6 +17,7 @@ namespace Scoundrel.Core.Services
         private readonly IPlayerState _playerState;
         private readonly IRoomSystem _roomSystem;
         private readonly IDeckSystem _deckSystem;
+        private readonly IGameSettings _settings;
         private readonly IDamageCalculator _spadesDamageCalculator;
         private readonly IDamageCalculator _clubsDamageCalculator;
 
@@ -28,11 +29,13 @@ namespace Scoundrel.Core.Services
         public CommandProcessor(
             IPlayerState playerState,
             IRoomSystem roomSystem,
-            IDeckSystem deckSystem)
+            IDeckSystem deckSystem,
+            IGameSettings settings)
         {
             _playerState = playerState ?? throw new ArgumentNullException(nameof(playerState));
             _roomSystem = roomSystem ?? throw new ArgumentNullException(nameof(roomSystem));
             _deckSystem = deckSystem ?? throw new ArgumentNullException(nameof(deckSystem));
+            _settings = settings ?? throw new ArgumentNullException(nameof(settings));
 
             // Create damage calculators
             _spadesDamageCalculator = new SpadesDamageCalculator();
@@ -70,7 +73,9 @@ namespace Scoundrel.Core.Services
         }
 
         /// <summary>
-        /// Creates and executes a run command.
+        /// Creates and executes the appropriate run command based on room state.
+        /// Dispatches to TacticalRetreatCommand (4 cards) or SafeExitCommand (1 card).
+        /// Returns false if in dead zone (2-3 cards) or other restrictions.
         /// </summary>
         /// <returns>True if command executed successfully, false otherwise.</returns>
         public async UniTask<bool> ProcessRunAsync()
@@ -81,8 +86,30 @@ namespace Scoundrel.Core.Services
                 return false;
             }
 
-            var command = new RunCommand(_playerState, _roomSystem, _deckSystem);
+            ICommand command = CreateRunCommand();
+            if (command == null)
+            {
+                Debug.LogWarning("[CommandProcessor] No valid run command for current room state.");
+                return false;
+            }
+
             return await ExecuteCommandAsync(command);
+        }
+
+        /// <summary>
+        /// Creates the appropriate run command based on current room card count.
+        /// Returns null if running is not available (dead zone: 2-3 cards, or 0 cards).
+        /// </summary>
+        private ICommand CreateRunCommand()
+        {
+            int cardCount = _roomSystem.CardCount;
+
+            return cardCount switch
+            {
+                4 => new TacticalRetreatCommand(_playerState, _roomSystem, _deckSystem),
+                1 => new SafeExitCommand(_roomSystem, _deckSystem, _playerState, _settings),
+                _ => null // Dead zone: 0, 2, or 3 cards
+            };
         }
 
         /// <summary>

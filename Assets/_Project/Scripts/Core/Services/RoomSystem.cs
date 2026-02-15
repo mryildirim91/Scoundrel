@@ -84,6 +84,23 @@ namespace Scoundrel.Core.Services
         }
 
         /// <summary>
+        /// Adds cards to the existing room without clearing current cards.
+        /// Used by Safe Exit to deal new cards while keeping the carried-over card.
+        /// Fires OnCardsAddedToRoom (not OnRoomDealt) so UI only animates new cards.
+        /// </summary>
+        public void AddCards(List<CardData> cards)
+        {
+            if (cards == null || cards.Count == 0) return;
+
+            _currentCards.AddRange(cards);
+
+            // Fire the additive event (not RoomDealt which would reset the UI)
+            _events.RaiseCardsAddedToRoom(cards);
+
+            Debug.Log($"[RoomSystem] Added {cards.Count} cards to room. Total: {_currentCards.Count}");
+        }
+
+        /// <summary>
         /// Gets all potion cards currently in the room.
         /// Used for visual feedback on overdose lock state.
         /// </summary>

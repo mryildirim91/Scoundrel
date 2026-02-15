@@ -15,7 +15,7 @@ MonoBehaviour:
   cardSprites:
   - suit: 0
     rank: 2
-    sprite: {fileID: 99280202, guid: 06cf0e971ab597c4baa1d5ebc85f9092, type: 3}
+    sprite: {fileID: 4224693672241641160, guid: 7f8ba6b334deb4bbc954a4133f094332, type: 3}
   - suit: 0
     rank: 3
     sprite: {fileID: -1202987920, guid: 667bbda77efdc7643af1ba3f7a57c731, type: 3}

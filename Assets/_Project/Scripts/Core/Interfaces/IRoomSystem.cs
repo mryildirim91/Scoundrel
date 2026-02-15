@@ -45,6 +45,12 @@ namespace Scoundrel.Core.Interfaces
         IReadOnlyList<CardData> GetPotionsInRoom();
 
         /// <summary>
+        /// Adds cards to the existing room without clearing current cards (used by Safe Exit).
+        /// The carried-over card stays in place while new cards fill empty slots.
+        /// </summary>
+        void AddCards(List<CardData> cards);
+
+        /// <summary>
         /// Checks if a specific card exists in the room.
         /// </summary>
         bool ContainsCard(CardData card);
