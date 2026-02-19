@@ -1,4 +1,5 @@
 using Cysharp.Threading.Tasks;
+using PrimeTween;
 using Scoundrel.Core.Interfaces;
 using Scoundrel.Core.Services;
 using Scoundrel.ScriptableObjects;
@@ -45,6 +46,10 @@ namespace Scoundrel.Core
             _cardDatabase = cardDatabase;
 
             Debug.Log("[GameBootstrapper] Init called with dependencies");
+
+            // Suppress PrimeTween warnings for tweening to current value (harmless no-ops)
+            PrimeTweenConfig.warnEndValueEqualsCurrent = false;
+            PrimeTweenConfig.warnTweenOnDisabledTarget = false;
 
             // Initialize all services
             InitializeServices();

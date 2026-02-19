@@ -168,7 +168,7 @@ namespace Scoundrel.UI.Views
                     if (_buttonText != null)
                     {
                         _buttonText.text = _tacticalRetreatText;
-                        _buttonText.color = _tacticalRetreatColor;
+                        _buttonText.color = Color.white;
                     }
                     if (_buttonImage != null)
                     {
@@ -181,7 +181,7 @@ namespace Scoundrel.UI.Views
                     if (_buttonText != null)
                     {
                         _buttonText.text = _safeExitText;
-                        _buttonText.color = _safeExitColor;
+                        _buttonText.color = Color.white;
                     }
                     if (_buttonImage != null)
                     {
@@ -194,7 +194,7 @@ namespace Scoundrel.UI.Views
                     if (_buttonText != null)
                     {
                         _buttonText.text = _disabledText;
-                        _buttonText.color = _disabledColor;
+                        _buttonText.color = Color.black;
                     }
                     if (_buttonImage != null)
                     {
