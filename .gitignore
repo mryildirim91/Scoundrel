@@ -28,6 +28,9 @@
 # Claude Code local settings
 .claude/
 
+# JetBrains Rider IDE settings
+.idea/
+
 # Visual Studio cache directory
 .vs/
 
