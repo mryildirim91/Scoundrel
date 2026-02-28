@@ -95,6 +95,5 @@ False.
 Run (1 card): Keep current card in RoomList, trigger The Deal (3 cards).
 5. Clean Up: If RoomList becomes empty through interaction (not Running), reset
 RunAvailable = True.
-6.
-End Conditions: Win if deck/room are empty; Loss if HP 0.
+6.End Conditions: Win if deck/room are empty; Loss if HP 0.
 
